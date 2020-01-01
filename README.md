@@ -29,6 +29,7 @@ None
 Example Playbook
 ----------------
 
+```yaml
   - hosts: servers
     roles:
       - role: mbee.ansible-role-gandi-dyndsn
@@ -36,6 +37,7 @@ Example Playbook
           web_api_key: XXXXXXXX
           web_domain: google.com
           web_subdomain: www
+```
 
 License
 -------
