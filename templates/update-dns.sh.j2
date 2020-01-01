@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+# https://nextnet.top/content/using-gandi-livedns-dynamic-dns-server
+
+# retreive current external IP address from Akamai server
+MY_IP=$(curl -s http://whatismyip.akamai.com/)  
+
+# Gandi livedn API KEY
+APIKEY="{{web_gandi_apikey}}"
+
+# Static Domain hosted at Gandi
+DOMAIN="{{web_domain}}"
+
+# Dynamic Subdomain
+SUBDOMAIN="{{web_subdomain}}"
+
+#Get the current Zone for the provided domain
+CURRENT_ZONE_HREF=$(curl -s -H "X-Api-Key: $APIKEY" https://dns.api.gandi.net/api/v5/domains/$DOMAIN | jq -r '.zone_records_href')
+
+# Update the A reccord of the Dynamic Subdomain by PUTing on the current zone
+curl -D- -X PUT -H "Content-Type: application/json" -H "X-Api-Key: $APIKEY" -d "{\"rrset_name\": \"$SUBDOMAIN\", \"rrset_type\": \"A\", \"rrset_ttl\": 300, \"rrset_values\": [\"$MY_IP\"]}" $CURRENT_ZONE_HREF/$SUBDOMAIN/A

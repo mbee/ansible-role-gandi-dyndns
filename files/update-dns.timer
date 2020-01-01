@@ -1,0 +1,9 @@
+[Unit]
+Description=Recurrent script to update the dns in gandi
+
+[Timer]
+OnCalendar=*:0/5
+Persistent=true
+
+[Install]
+WantedBy=timers.target

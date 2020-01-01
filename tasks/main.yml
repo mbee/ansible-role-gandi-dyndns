@@ -1,0 +1,42 @@
+
+- name: install basic packages
+  become: true
+  apt:
+    name:
+      - curl
+      - jq
+    state: present
+
+- name: install script
+  become: true
+  template:
+    src: update-dns.sh.j2
+    dest: /usr/local/bin/update-dns.sh
+    mode: "0755"
+
+- name: service and timer files
+  become: true
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: "0644"
+  with_items:
+    - update-dns.service
+    - update-dns.timer
+
+- name: install new update-dns service
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: just force systemd to re-execute itself (2.8 and above)
+  become: true
+  systemd:
+    daemon_reexec: yes
+
+- name: install new update-dns service
+  become: true
+  systemd:
+    enabled: yes
+    name: update-dns.timer
+    state: started
